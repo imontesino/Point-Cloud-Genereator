@@ -1,0 +1,6 @@
+(lp0
+S'Total Assy.stp'
+p1
+aS'Chair.step'
+p2
+a.
