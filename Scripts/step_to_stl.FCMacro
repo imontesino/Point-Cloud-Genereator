@@ -1,0 +1,66 @@
+PCGPATH = "/home/ignacio/Documents/TFG" #path to directory of the point cloud generator"
+
+
+#--------------Finding the Stepfiles in Step folder--------------#
+import os, sys, glob
+import pickle
+os.chdir(PCGPATH + "/STEP Files")
+
+cad_filenames = list()
+database = list()
+
+print("FreeCAD Macro: Checking for new STEP files...")
+
+try: 
+    with open("proccesed_files.txt", "rb") as fp:   # Unpickling
+        database = pickle.load(fp)
+except:
+    with open("proccesed_files.txt", "wb") as fp:   #Pickling
+        pickle.dump(database, fp)
+
+
+for f in glob.glob("*.stp"):
+    if f not in database:
+        cad_filenames.append(f)
+        database.append(f)
+
+for f in glob.glob("*.step"):
+    if f not in database:
+        cad_filenames.append(f)
+        database.append(f)
+
+with open("proccesed_files.txt", "wb") as fp:   #Pickling
+    pickle.dump(database, fp)
+
+	
+
+
+#--------------------Converting stp to stl----------------------------#
+import Mesh, Import
+
+bad_labels =['X_Axis', 'XY_Plane', 'XZ_Plane', 'Y_Axis', 'YZ_Plane', 'Z_Axis'] #April 2018 update added these as parts of the assembly
+
+print("FreeCAD Macro: Running STEP to STL conversion...")
+
+for filename in cad_filenames:
+    l = len(filename)
+    if filename[(l-5):] == '.step':
+		l = l - 1
+    
+    Import.open(PCGPATH + "/STEP Files/"+filename)
+    App.setActiveDocument("Unnamed")
+    App.ActiveDocument=App.getDocument("Unnamed")
+
+
+    if not os.path.exists(PCGPATH + "/STL Files/"+filename[:(l-4)]+"/"):
+        os.mkdir(PCGPATH + "/STL Files/"+filename[:(l-4)]+"/")
+
+    for part in App.ActiveDocument.Objects:
+        __objs__=[]
+        __objs__.append(FreeCAD.getDocument("Unnamed").getObject(part.Name))
+        if part.Label not in bad_labels:
+            Mesh.export(__objs__,PCGPATH + "/STL Files/"+filename[:(l-4)]+"/"+part.Label+".stl")
+        del __objs__
+
+    App.closeDocument("Unnamed")
+
