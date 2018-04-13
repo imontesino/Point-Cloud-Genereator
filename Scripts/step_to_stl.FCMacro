@@ -38,7 +38,7 @@ with open("proccesed_files.txt", "wb") as fp:   #Pickling
 #--------------------Converting stp to stl----------------------------#
 import Mesh, Import
 
-bad_labels =['X_Axis', 'XY_Plane', 'XZ_Plane', 'Y_Axis', 'YZ_Plane', 'Z_Axis'] #April 2018 update added these as parts of the assembly
+bad_labels =['X_Axis', 'XY_Plane', 'XZ_Plane', 'Y_Axis', 'YZ_Plane', 'Z_Axis', 'Origin'] #April 2018 update added these as parts of the assembly
 
 print("FreeCAD Macro: Running STEP to STL conversion...")
 
